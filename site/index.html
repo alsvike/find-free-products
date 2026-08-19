@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="A conservative crawler that finds genuinely free products in Danish webshops."
+    />
+    <meta name="theme-color" content="#f4f1e8" />
+    <title>Gratisjagten — genuine free product finder</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <script src="/config.js"></script>
+    <script src="/app.js" defer></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="Gratisjagten home">
+        <span class="brand-mark" aria-hidden="true">0</span>
+        <span>Gratisjagten</span>
+      </a>
+      <div class="run-state">
+        <span class="pulse" aria-hidden="true"></span>
+        <span id="run-label">Loading crawl status…</span>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero" aria-labelledby="page-title">
+        <div class="eyebrow">DANISH WEBSHOP MONITOR</div>
+        <h1 id="page-title">Free means <em>actually free.</em></h1>
+        <p class="hero-copy">
+          A strict crawler looking for real 0 kr. products—not free shipping,
+          empty carts, option prices, or “from 0 kr.” offers.
+        </p>
+        <div class="hero-rule" aria-hidden="true"></div>
+      </section>
+
+      <section class="metrics" aria-label="Crawl summary">
+        <article class="metric metric-primary">
+          <span class="metric-label">Free candidates</span>
+          <strong id="metric-findings">—</strong>
+          <span class="metric-note">passed strict checks</span>
+        </article>
+        <article class="metric">
+          <span class="metric-label">Shops completed</span>
+          <strong id="metric-completed">—</strong>
+          <span class="metric-note" id="metric-total">of — total</span>
+        </article>
+        <article class="metric">
+          <span class="metric-label">Pages inspected</span>
+          <strong id="metric-pages">—</strong>
+          <span class="metric-note">HTML product signals</span>
+        </article>
+        <article class="metric metric-alert">
+          <span class="metric-label">Need another try</span>
+          <strong id="metric-retry">—</strong>
+          <span class="metric-note">rate-limited or blocked</span>
+        </article>
+      </section>
+
+      <section class="progress-panel" aria-labelledby="progress-title">
+        <div>
+          <span class="section-kicker">OVERNIGHT PROGRESS</span>
+          <h2 id="progress-title">Scanning the catalogue</h2>
+        </div>
+        <div class="progress-copy">
+          <strong id="progress-percent">0%</strong>
+          <span id="progress-detail">Preparing data…</span>
+        </div>
+        <div class="progress-track" aria-hidden="true">
+          <span id="progress-bar"></span>
+        </div>
+      </section>
+
+      <section class="crawl-console" aria-labelledby="console-title">
+        <div class="console-intro">
+          <span class="section-kicker">CRAWL CONTROL</span>
+          <h2 id="console-title">Start it from here.</h2>
+          <p>
+            Launch the free GitHub runner, follow its status, and let it save
+            progress back to this dashboard. The private key prevents visitors
+            from starting jobs.
+          </p>
+        </div>
+        <form id="crawl-form" class="console-form">
+          <label>
+            <span>Run length</span>
+            <select id="run-duration">
+              <option value="60">Quick run · 1 hour</option>
+              <option value="180">Long run · 3 hours</option>
+              <option value="300" selected>Overnight · 5 hours</option>
+            </select>
+          </label>
+          <label>
+            <span>Dashboard key</span>
+            <input
+              id="admin-key"
+              type="password"
+              autocomplete="current-password"
+              placeholder="Your private start key"
+              required
+            />
+          </label>
+          <div class="console-actions">
+            <button id="start-crawl" type="submit">Start crawler</button>
+            <button id="refresh-runs" type="button" class="button-secondary">Refresh status</button>
+          </div>
+          <p id="console-message" class="console-message" aria-live="polite">
+            Ready when you are.
+          </p>
+        </form>
+        <div class="run-history">
+          <div class="run-history-heading">
+            <span>Latest runs</span>
+            <span id="runner-state">Connecting…</span>
+          </div>
+          <div id="run-list" class="run-list"></div>
+        </div>
+      </section>
+
+      <section class="results" aria-labelledby="results-title">
+        <div class="section-heading">
+          <div>
+            <span class="section-kicker">CURRENT FINDS</span>
+            <h2 id="results-title">Products worth checking</h2>
+          </div>
+          <p>
+            Candidates are linked to their original webshop. Shipping charges
+            may still apply even when the product price is 0 kr.
+          </p>
+        </div>
+
+        <div class="toolbar">
+          <label class="search-field">
+            <span class="sr-only">Search findings</span>
+            <input id="search" type="search" placeholder="Search product or shop" />
+          </label>
+          <label class="select-field">
+            <span class="sr-only">Filter by evidence type</span>
+            <select id="match-filter">
+              <option value="all">All evidence</option>
+            </select>
+          </label>
+          <a id="download-results" class="download-link" href="/data/gratis_produkter.csv" download>
+            Download results CSV
+          </a>
+          <a id="download-status" class="download-link" href="/data/scannede_webshops.csv" download>
+            Download status CSV
+          </a>
+        </div>
+
+        <div id="results-grid" class="results-grid" aria-live="polite"></div>
+        <div id="empty-state" class="empty-state" hidden>
+          <span>0 kr.</span>
+          <h3>No matching candidates</h3>
+          <p>Try a different search or wait for the next overnight crawl.</p>
+        </div>
+      </section>
+
+      <section class="method" aria-labelledby="method-title">
+        <div>
+          <span class="section-kicker">STRICT BY DESIGN</span>
+          <h2 id="method-title">What gets rejected</h2>
+        </div>
+        <ul>
+          <li><span>01</span>Free shipping and delivery</li>
+          <li><span>02</span>Empty carts and subtotals</li>
+          <li><span>03</span>Variants and +0 kr. add-ons</li>
+          <li><span>04</span>“From 0 kr.” placeholders</li>
+          <li><span>05</span>Gifts requiring another purchase</li>
+          <li><span>06</span>Hidden or contradictory prices</li>
+        </ul>
+      </section>
+    </main>
+
+    <footer>
+      <span>Gratisjagten</span>
+      <p>Automated evidence, always verify availability before ordering.</p>
+      <span id="last-updated">Last updated —</span>
+    </footer>
+  </body>
+</html>

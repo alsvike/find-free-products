@@ -1,0 +1,79 @@
+name: Nightly free-product crawl
+
+on:
+  workflow_dispatch:
+    inputs:
+      max_runtime_minutes:
+        description: How long should the crawler start new shops?
+        required: true
+        default: "300"
+        type: choice
+        options:
+          - "60"
+          - "180"
+          - "300"
+  schedule:
+    - cron: "0 22 * * *"
+      timezone: "Europe/Copenhagen"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: nightly-free-product-crawl
+  cancel-in-progress: false
+
+jobs:
+  crawl:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install crawler dependencies
+        run: python -m pip install -r requirements_free_product_finder.txt
+
+      - name: Run regression tests
+        run: python -m unittest -q test_find_free_products_v5.py
+
+      - name: Crawl for up to five hours
+        run: >-
+          python find_free_products_emaerket_v5_strict.py emaerkede_webshops.csv
+          --output site/data/gratis_produkter.csv
+          --status site/data/scannede_webshops.csv
+          --workers 5
+          --timeout 10
+          --delay 0.35
+          --max-pages-per-site 15
+          --max-sitemap-urls 1500
+          --max-runtime-minutes ${{ inputs.max_runtime_minutes || '300' }}
+          --resume
+
+      - name: Refresh dashboard summary
+        run: >-
+          python scripts/update_run_info.py
+          --input emaerkede_webshops.csv
+          --findings site/data/gratis_produkter.csv
+          --status site/data/scannede_webshops.csv
+          --output site/data/run-info.json
+
+      - name: Commit refreshed crawl data
+        run: |
+          if git diff --quiet -- site/data; then
+            echo "No crawl data changes to publish."
+            exit 0
+          fi
+          git config user.name "gratisjagten-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add site/data
+          git commit -m "data: refresh free-product crawl [skip ci]"
+          git push
+

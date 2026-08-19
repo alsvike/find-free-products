@@ -1,0 +1,20 @@
+[build]
+  publish = "site"
+  functions = "netlify/functions"
+  # Skip paid production deploys when a crawl changes only public data files.
+  # The dashboard reads those files directly from GitHub.
+  ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF . ':(exclude)site/data/**'"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+
+[[headers]]
+  for = "/data/*"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+

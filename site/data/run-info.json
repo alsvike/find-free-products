@@ -1,0 +1,17 @@
+{
+  "generated_at": "2026-08-19T20:48:44.921231+00:00",
+  "total_shops": 1431,
+  "recorded_shops": 200,
+  "completed_shops": 153,
+  "pages_checked": 1981,
+  "findings": 2,
+  "status_counts": {
+    "blocked": 1,
+    "external_redirect": 1,
+    "homepage_not_found": 1,
+    "http_503": 1,
+    "ok": 151,
+    "rate_limited": 43,
+    "unreachable": 2
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "name": "gratisjagten-dashboard",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test test_dashboard_functions.mjs"
+  }
+}

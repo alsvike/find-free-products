@@ -1,0 +1,7 @@
+__pycache__/
+*.py[cod]
+.venv/
+.netlify/
+.env
+/gratis_produkter_test_200.csv
+/scannede_webshops_test_200.csv
